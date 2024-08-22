@@ -3,10 +3,13 @@ type Range<
   Acc extends number[] = [],
 > = Acc["length"] extends N ? Acc : Range<N, [...Acc, Acc["length"]]>;
 
-type _Inc<N extends number> = [...Range<N>, N]["length"];
-type Inc<N extends number> = _Inc<N> extends number ? _Inc<N> : never;
-type IncMod<N extends number, Mod extends number> =
-  Inc<N> extends Mod ? 0 : Inc<N>;
+type Inc<N extends number, N1 = [...Range<N>, N]["length"]> = N1 extends number
+  ? N1
+  : never;
+
+type IncMod<N extends number, Mod extends number, N1 = Inc<N>> = N1 extends Mod
+  ? 0
+  : N1;
 
 type Memory<
   N extends number = number,
