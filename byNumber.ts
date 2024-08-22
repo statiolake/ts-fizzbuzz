@@ -11,29 +11,25 @@ type IncMod<N extends number, Mod extends number, N1 = Inc<N>> = N1 extends Mod
   ? 0
   : N1;
 
-type Memory<
-  N extends number = number,
-  Mod3 extends number = N,
-  Mod5 extends number = N,
-> = [N, Mod3, Mod5];
+type IncMemory<C> = C extends [
+  infer N extends number,
+  infer Mod3 extends number,
+  infer Mod5 extends number,
+]
+  ? [Inc<N>, IncMod<Mod3, 3>, IncMod<Mod5, 5>]
+  : never;
 
-type IncMemory<C extends Memory> =
-  C extends Memory<infer N, infer Mod3, infer Mod5>
-    ? Memory<Inc<N>, IncMod<Mod3, 3>, IncMod<Mod5, 5>>
-    : never;
+type FizzBuzz<C> = C extends [infer N extends number, infer Mod3, infer Mod5]
+  ? Mod3 extends 0
+    ? Mod5 extends 0
+      ? "FizzBuzz"
+      : "Fizz"
+    : Mod5 extends 0
+      ? "Buzz"
+      : `${N}`
+  : never;
 
-type FizzBuzz<C extends Memory> =
-  C extends Memory<infer N, infer Mod3, infer Mod5>
-    ? Mod3 extends 0
-      ? Mod5 extends 0
-        ? "FizzBuzz"
-        : "Fizz"
-      : Mod5 extends 0
-        ? "Buzz"
-        : `${N}`
-    : never;
-
-class FizzBuzzPrinter<F extends Memory = Memory<1>> {
+class FizzBuzzPrinter<F = IncMemory<[0, 0, 0]>> {
   print(value: FizzBuzz<F>): FizzBuzzPrinter<IncMemory<F>> {
     console.log(value);
     return new FizzBuzzPrinter();
