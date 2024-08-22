@@ -13,46 +13,46 @@ type IncDigit<D extends Digit> = {
 }[D];
 type IncDigitCarry<D extends Digit> = D extends "9" ? true : false;
 
-type Reverse<Integer extends string> =
-  Integer extends `${infer Head extends Digit}${infer Tail extends string}`
+type Reverse<N extends string> =
+  N extends `${infer Head extends Digit}${infer Tail extends string}`
     ? `${Reverse<Tail>}${Head}`
     : "";
 
-type Inc<Integer extends string> = Integer extends ""
+type Inc<N extends string> = N extends ""
   ? "1"
-  : Reverse<Integer> extends `${infer D extends Digit}${infer Rest extends string}`
+  : Reverse<N> extends `${infer D extends Digit}${infer Rest extends string}`
     ? IncDigitCarry<D> extends true
       ? `${Inc<Reverse<Rest>>}0`
       : `${Reverse<Rest>}${IncDigit<D>}`
     : never;
 
-type IncMod<Integer extends Digit, Mod extends Digit> =
-  IncDigit<Integer> extends Mod ? "0" : IncDigit<Integer>;
+type IncMod<N extends string, Mod extends string> =
+  Inc<N> extends Mod ? "0" : Inc<N>;
 
-type FizzBuzzContext<
-  Integer extends string = string,
-  Mod3 extends Digit = Digit,
-  Mod5 extends Digit = Digit,
-> = [Integer, Mod3, Mod5];
+type Memory<
+  N extends string = string,
+  Mod3 extends string = string,
+  Mod5 extends string = string,
+> = [N, Mod3, Mod5];
 
-type IncFizzBuzzContext<Context extends FizzBuzzContext> =
-  Context extends FizzBuzzContext<infer Integer, infer Mod3, infer Mod5>
-    ? FizzBuzzContext<Inc<Integer>, IncMod<Mod3, "3">, IncMod<Mod5, "5">>
+type IncMemory<C extends Memory> =
+  C extends Memory<infer N, infer Mod3, infer Mod5>
+    ? Memory<Inc<N>, IncMod<Mod3, "3">, IncMod<Mod5, "5">>
     : never;
 
-type FizzBuzz<Context extends FizzBuzzContext> =
-  Context extends FizzBuzzContext<infer Integer, infer Mod3, infer Mod5>
+type FizzBuzz<C extends Memory> =
+  C extends Memory<infer N, infer Mod3, infer Mod5>
     ? Mod3 extends "0"
       ? Mod5 extends "0"
         ? "FizzBuzz"
         : "Fizz"
       : Mod5 extends "0"
         ? "Buzz"
-        : Integer
+        : N
     : never;
 
-class Printer<F extends FizzBuzzContext = FizzBuzzContext<"1", "1", "1">> {
-  print(value: FizzBuzz<F>): Printer<IncFizzBuzzContext<F>> {
+class Printer<F extends Memory = Memory<"1", "1", "1">> {
+  print(value: FizzBuzz<F>): Printer<IncMemory<F>> {
     console.log(value);
     return new Printer();
   }
